@@ -71,9 +71,14 @@ macro_rules! define_macro {
 
 #[macro_export]
 macro_rules! for_each {
-    ($bind:ident in $iterator:expr => $expr:expr $(,)?) => {{
-        use $crate::CollectView;
-        $iterator.into_iter().map(|$bind| $expr).collect_view()
+    ($bind:pat in $iterator:expr => $expr:expr $(,)?) => {{
+        #[allow(unused_imports)]
+        use $crate::IntoView;
+        let mut __buffer = vec![];
+        for $bind in $iterator {
+            __buffer.push({ $expr });
+        }
+        __buffer.into_view()
     }};
 }
 
