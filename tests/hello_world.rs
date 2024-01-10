@@ -10,7 +10,7 @@ fn hello_world() {
             "WOW THAT IS PRETTY"
         }
         leptos_macabre::for_each!{
-            number in 0..3 => {
+            ref number in 0..3 => {
                 number.to_string()
             }
         }
