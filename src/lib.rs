@@ -5,6 +5,7 @@ pub use leptos_dom::html::*;
 pub use leptos_dom::{CollectView, IntoAttribute, IntoView};
 
 /// Internal helper to parse attribute
+#[doc(hidden)]
 #[macro_export]
 macro_rules! __parse_attribute {
     ($lhs:ident $(- $lhs_post:ident)* = $rhs:expr) => {
