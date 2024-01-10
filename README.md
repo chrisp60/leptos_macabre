@@ -8,6 +8,7 @@ fn main() {
     let mut n = 0;
 
     let view = form! {
+        @hx-boost="true";
         @action="/ghastly";
         @method="post";
         @class; // Shorthand attributes
@@ -38,7 +39,7 @@ fn main() {
     };
 
     let expected = r#"
-    <form action="/ghastly" method="post" class="grim">
+    <form hx-boost="true" action="/ghastly" method="post" class="grim">
         <label>
             What scares you the most?
             <input type="text" name="fear" value="Complexity"/>
@@ -73,14 +74,11 @@ assert_eq!(a, b, "<div class=\"spooky\"></div>");
 ```
 
 ### Child Elements
-Children **must** be placed after any attributes. Any expression returning 
+Children **must** be placed after any attributes. Any expression returning
 `T: IntoView` is valid.
 
-You might notice the match statement below does not need to call `.into_view()`
+The match statement below does not need to call `.into_view()`
 on each arm. The macro calls `into_view()` on each element after it is built.
-There is probably a performance hit from doing this. This crate values
-convenience over the assumed performance hit. An opt-out feature flag
-could be added to disable this in the future.
 
 ```rust
 use leptos_macabre::*;
@@ -90,14 +88,11 @@ let pet = Pet::Dog;
 
 let view = p! { 
     "Free control flow!" 
-
     if false { println!("The compiler decides my fate"); }
-
     match pet {
         Pet::Dog => strong! { "Perfect" },
         Pet::Cat => p! { "Also Perfect" },
     }
-
 };
 
 assert_eq!(
@@ -112,22 +107,23 @@ The only extra "component" is the `for_each!` macro.
 
 ```rust 
 use leptos_macabre::*;
-let output = for_each! {
-    n in 0..2 => { p! { n } } 
-};
-
-// literally translates to (0..2).into_iter().map(|n| p!(n)).collect_view()
+let output = for_each! { n in 0..2 => { p! { n } } };
 assert_eq!(
     "<p>0</p><p>1</p>", 
     output.render_to_string().to_string()
 );
+
+// Patterns are good!
+for_each! {
+    ref mut binding in [1, 2 ,3] => { }
+};
 ```
 
 ## Dependencies
-This crate re-exports the `leptos` items it relies on. You do not need to
+This crate re-exports the `leptos_dom` items it relies on. You do not need to
 rely on any `leptos` crate directly unless you need something specific.
 
-I am new to publishing so, feel free to PR if there is a more idiomatic way
+I am new to publishing. Feel free to PR if there is a more idiomatic way
 to source items from withing a macro.
 
 ```toml
@@ -151,9 +147,8 @@ I just want to type less. `macro_rules!` definitions are pretty negligible
 as far as compile times go (AFAIK).
 
 ```rust, ignore
+// a hypothetical macro
 fview! { button { "Click me!" } }.into_view() // -> View
 button! { "Click me!" } // -> View
-// 45 keystrokes vs. 23
 ```
-
-
+It probably seems stupid but, a difference of 22 keystrokes means a lot.
