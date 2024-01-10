@@ -7,30 +7,25 @@ pub use leptos_dom::{CollectView, IntoAttribute, IntoView};
 /// Internal helper to parse attribute
 #[macro_export]
 macro_rules! __parse_attribute {
-    ($lhs:ident $(- $lhs_post:ident)?) => {
+    ($lhs:ident $(- $lhs_post:ident)* = $rhs:expr) => {
         (
             $crate::__parse_attribute! {
-                @handle_dashes $lhs $(- $lhs_post)?
-            },
-            $lhs.into_attribute()
-        )
-    };
-    ($lhs:ident $(- $lhs_post:ident)? = $rhs:expr) => {
-        (
-            $crate::__parse_attribute! {
-                @handle_dashes $lhs $(- $lhs_post)?
+                @handle_dashes $lhs $(- $lhs_post)*
             },
             $rhs.into_attribute()
         )
     };
-    (@handle_dashes $lhs:ident $(- $lhs_post:ident)?) => {
-        concat!{
-            stringify!($lhs),
-            $(
-                stringify!(_),
-                stringify!($lhs_post),
-            )?
+    ($lhs:ident) => {
+        (stringify!($lhs), $lhs.into_attribute())
+    };
+    ($lhs:ident $(- $lhs_post:ident)+) => {
+        compile_error! {
+            "cannot use shortand attribute values with 
+            invalid rust identifiers."
         }
+    };
+    (@handle_dashes $lhs:ident $(- $lhs_post:ident)*) => {
+        concat!{ stringify!($lhs), $( "-", stringify!($lhs_post), )* }
     };
 }
 
@@ -40,12 +35,12 @@ macro_rules! define_macro {
         <$element:ident> $(,)*
     ),*) => {
         $(
-            #[allow(unused)]
+            $(#[$meta])*
             #[macro_export]
             macro_rules! $element {
                 (
                     $$(@
-                        $$lhs:ident $$(- $$lhs_post:ident )?
+                        $$lhs:ident $$(- $$lhs_post:ident )*
                         $$(= $$rhs:expr )?
                     ;)*
                     $$( $$children:expr $$(,)? )*
@@ -58,7 +53,7 @@ macro_rules! define_macro {
                         __dummy_attr,
                         $$(
                             $crate::__parse_attribute! {
-                                $$lhs $$(- $$lhs_post )?
+                                $$lhs $$(- $$lhs_post )*
                                 $$( = $$rhs )?
                             },
                         )*
