@@ -1,0 +1,13 @@
+[package]
+name = "leptos_macabre"
+version = "0.1.0"
+edition = "2021"
+authors = ["Christopher Perry"]
+license = "MIT"
+description = "Horribly simple wrapper around leptos_dom, focused on server-side rendering."
+
+[dependencies]
+leptos_dom = { version = "0.5.4", features = ["ssr", "experimental-islands"] }
+
+[dev-dependencies]
+indoc = "2.0.4"
