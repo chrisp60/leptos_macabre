@@ -4,6 +4,10 @@
 pub use leptos_dom::html::*;
 pub use leptos_dom::{CollectView, IntoAttribute, IntoView};
 
+pub fn render(v: impl IntoView) -> String {
+    v.into_view().render_to_string().to_string()
+}
+
 /// Internal helper to parse attribute
 #[doc(hidden)]
 #[macro_export]
