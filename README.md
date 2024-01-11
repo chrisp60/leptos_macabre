@@ -1,58 +1,17 @@
 # Leptos Macabre
 
-```rust
-use leptos_macabre::*;
-fn main() {
-    let class = "grim";
-    let hecks = vec!["(~'o')~", "(~'_')~", "(◟ᅇ)◜"];
-    let mut n = 0;
-
-    let view = form! {
-        @hx-boost="true";
-        @action="/ghastly";
-        @method="post";
-        @class; // Shorthand attributes
-
-        // Children are expressions -> impl IntoView.
-        // Separate them with an optional comma.
-        label! {
-            "What scares you the most?",
-            input! {
-                @type="text";
-                @name="fear";
-                @value="Complexity";
-            },
-        }
-
-        // Loops
-        for_each! {
-            heck in hecks => {
-                p! { 
-                    @id=format!("heck-{n}"); 
-                    n += 1 // -> (): impl IntoView
-                    { println!("this is also Ok") } // -> (): impl IntoView
-                    heck
-                }
-            },
+```rust, ignore
+section! {
+    h1!{"Id number: " id},
+    details! {"Uploaded at: " upload_time}
+    match upload.msg {
+        Some(msg) => div! {
+            p!{strong!{"Done"}}
+            p!{"Report Type: " div!{@style="color: green"; msg}},
+            p!{"Records Processed: " upload.records}
         },
-        input! { @type="submit"; }
-    };
-
-    let expected = r#"
-    <form hx-boost="true" action="/ghastly" method="post" class="grim">
-        <label>
-            What scares you the most?
-            <input type="text" name="fear" value="Complexity"/>
-        </label>
-        <p id="heck-0">(~&#x27;o&#x27;)~</p>
-        <p id="heck-1">(~&#x27;_&#x27;)~</p>
-        <p id="heck-2">(◟ᅇ)◜</p>
-        <input type="submit"/>
-    </form>"# 
-    .replace(['\n', '\t'], "")
-    .replace("    ", "");
-
-    assert_eq!(view.render_to_string().to_string(), expected);
+        None => p!("Still processing, refresh to update"),
+    }
 }
 ```
 

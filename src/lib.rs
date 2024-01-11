@@ -1,7 +1,6 @@
 #![feature(macro_metavar_expr)]
 #![doc = include_str!("../README.md")]
 
-pub use leptos_dom::html::*;
 pub use leptos_dom::{CollectView, IntoAttribute, IntoView};
 
 pub fn render(v: impl IntoView) -> String {
@@ -40,6 +39,7 @@ macro_rules! define_macro {
         <$element:ident> $(,)*
     ),*) => {
         $(
+            pub use leptos_dom::html::$element;
             $(#[$meta])*
             #[macro_export]
             macro_rules! $element {
@@ -104,23 +104,12 @@ define_macro! {
     <audio>,
     ///	Displays enclosed text in bold typeface without conveying any added importance.
     <b>,
-    ///	Defines the base URI or URL for all the relative links in the HTML document.
-    <base>,
-    <basefont>,
-    ///	Defines bidirectional text isolation.
-    <bdi>,
-    ///	Defines bidirectional text override.
-    <bdo>,
-    ///	Defines a quoted section.
-    <blockquote>,
     ///	Defines the HTML container that contains visible contents of an HTML document.
     <body>,
     ///	Defines a line break.
     <br>,
     ///	Creates a button.
     <button>,
-    ///	Defines an area of the webpage that becomes a space for rendering graphics.
-    <canvas>,
     ///	Defines an HTML table caption.
     <caption>,
     ///	Defines a title for a work.
@@ -131,8 +120,6 @@ define_macro! {
     <col>,
     ///	Specifies a common formatting style for a group of columns.
     <colgroup>,
-    ///	Specifies a comment in the document's source code.
-    <comment>,
     ///	Specifies an autocomplete feature to be used with a form element.
     <datalist>,
     ///	Describes a term in a description list.
@@ -141,8 +128,6 @@ define_macro! {
     <del>,
     ///	Specifies additional details that can be shown or hidden manually.
     <details>,
-    ///	Represents a term that needs an explanation.
-    <dfn>,
     ///	Creates pop-up dialog models.
     <dialog>,
     ///	Defines a section or a division in HTML document by grouping elements.
