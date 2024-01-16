@@ -1,6 +1,6 @@
 # Leptos Macabre
 
-Scary simple server-side rendering.
+Scary simple server-side rendering. Powered by [Leptos](https://github.com/leptos-rs/leptos).
 
 ```rust
 use leptos_macabre::*;
