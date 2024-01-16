@@ -53,7 +53,7 @@ match result {
     Some(true) => a!(@href; "Go here!"),
     Some(false) => p!(@class="bad"; "Uh-oh!"),
     None => div!(),
-}
+};
 ```
 
 ### Every Element a Macro.
