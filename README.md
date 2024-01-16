@@ -35,7 +35,7 @@ section! {
 
 ## Details & Conveniences
 
-## Compile Time & Lsp
+### Compile Time & Lsp
 Due to everything being a minimally recursive `macro_rules!`, auto-complete and suggestions
 are incredibly snappy.
 
@@ -53,7 +53,7 @@ match result {
     Some(true) => a!(@href; "Go here!"),
     Some(false) => p!(@class="bad"; "Uh-oh!"),
     None => div!(),
-}
+};
 ```
 
 ### Every Element a Macro.
