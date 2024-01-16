@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["Christopher Perry"]
 license = "MIT"
 description = "Horribly simple wrapper around leptos_dom, focused on server-side rendering."
+repository = "https://github.com/chrisp60/leptos_macabre"
 
 [dependencies]
 leptos_dom = { version = "0.5.4", features = ["ssr", "experimental-islands"] }
