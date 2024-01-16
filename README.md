@@ -1,36 +1,51 @@
 # Leptos Macabre
 
-```rust, ignore
-section! {
-    h1!{"Id number: " id},
-    details! {"Uploaded at: " upload_time}
-    match upload.msg {
-        Some(msg) => div! {
-            p!{strong!{"Done"}}
-            p!{"Report Type: " div!{@style="color: green"; msg}},
-            p!{"Records Processed: " upload.records}
-        },
-        None => p!("Still processing, refresh to update"),
-    }
-}
-```
-# Syntax
-* An **attribute** starts with `@` and ends with `;`.
-* A **child** is any expression that returns `impl IntoView`.
-* Children can be delimited with an *optional* comma `,`.
-* Attribute values can be *ommited* when the identifier and names are the same.
-* The macro will **not** handle shorthand attributes using raw identifiers.
-
-That's it! You are ready to create some `leptos::View`s.
-
-## Details & Conveniences
-
-Every macro in this crate returns a `View`, this intentionally diverts from 
-leptos to not require `.into_view()` on each arm (an understandable requirement).
+Scary simple server-side rendering.
 
 ```rust
 use leptos_macabre::*;
 
+let result: Result<_, &str> = Ok("Done!");
+let style = "color: green;";
+
+section! {
+    h1!{ "Uploads" },
+    match result {
+        Ok(msg) => div! {
+            @htmx-get="/uploads";
+            @style;
+            p!{ "Status: ", msg },
+        },
+        Err(err) => strong! {
+            @class="error";
+            "Uh Oh: " err
+        },
+    }
+};
+```
+
+## Syntax
+
+- **Attributes** starts with `@` and end with `;`.
+- **Attributes Values** are expressions returning `impl leptos::IntoAttribute`.
+- **Attributes Values** can be shorthanded when the name equals a variable in scope.
+  Raw identifiers (i.e. `r#type`) are not supported.
+- **Children** are expressions returning `impl leptos::IntoView`.
+- **Children** can be delimited with an _optional_ comma (helps rustfmt and auto-indenting, sometimes).
+
+## Details & Conveniences
+
+## Compile Time & Lsp
+Due to everything being a minimally recursive `macro_rules!`, auto-complete and suggestions
+are incredibly snappy.
+
+### Auto `.into_view()`
+
+Every macro in this crate returns a `View`, this intentionally diverts from
+leptos to not require `.into_view()` on each arm (an understandable requirement).
+
+```rust
+use leptos_macabre::*;
 let result = Some(true);
 let href = "#section";
 
@@ -41,9 +56,10 @@ match result {
 }
 ```
 
-Each element is implemented as a separate macro. Kind of strange, yes. But,
-it saves quite a bit on keystrokes and allows for much more modular snippets
-of html.
+### Every Element a Macro.
+
+Each element is a separate macro. This saves many keystrokes. It is different
+from most Rust HTML macros.
 
 ```rust, ignore
 use leptos::*;
@@ -53,46 +69,59 @@ view! { <button>"27 keystrokes"</button> }
 button! { "10 keystrokes" }
 ```
 
-This crate reexports the `leptos_dom` items that it relies on. If you do not
-need anything specific from `leptos` you can rely on this crate alone. Although,
-they have a ton of great things over there.
+### Re-Export
 
-`leptos` components can be used with some caveats. If your component takes props
-you will need to supply the generated `*Prop` struct as arguments when calling
-your component. Otherwise, you can call the component like any other function.
+This crate exports the `leptos_dom` items needed to work. If you just want
+to make HTML on the server, you can skip adding `leptos` as its own dependency.
 
-Prop level attributes have not been tested but, I would not expect them to work.
+## Drawbacks
+
+No reactivity that can't be implemented with a `script!` or normal html event
+handlers. No signals. Performance will probably be worse when compared directly
+to `leptos::view!`.
+
+`leptos` components with props are minimally supported. The generated `Prop*`
+struct would need to be provided as an argument, meaning you skip
+many of the conveniences of using `#[component]` in the first place (optional
+props etc).
 
 ```rust, ignore
 use leptos_macabre::*;
+use leptos::component;
 
-#[leptos::component]
-fn MyButton() -> impl leptos::IntoView { }
+#[component]
+fn MyButton() -> impl leptos::IntoView {}
 
-#[leptos::component]
+#[component]
 fn MyA(href: &'static str) -> impl leptos::IntoView {}
 
-p!{@id="cool-button"; MyButton};
-p!{@id="cool-button"; MyButton()};
-p!{@style="color: red"; MyA(MyAProps { href: "#red" })};
+p!{ MyButton };
+p!{ MyButton() };
+p!{ MyA(MyAProps { href: "#red" }) };
+
 ```
 
-Since children are always just expressions, you can swap out components and
-instead use regular functions in their place.
+Since children are just expressions returning `impl IntoView`, you can swap out
+components with boring old functions.
 
 ```rust, ignore
 use leptos_macabre::*;
 
-fn my_button() -> impl leptos_macabre::IntoView { }
+fn my_button() -> impl leptos::IntoView { }
+fn my_a(href: &'static str) -> impl leptos::IntoView {}
+fn my_b(inner: Option<bool>) -> impl leptos::IntoView {}
 
-fn my_a(href: &'static str) -> impl leptos_macabre::IntoView {}
+div! { 
+    my_button,
+    my_button(),
+    my_a("#red"),
+    my_b(Some(true)) ,
+};
 
-p!(my_button, "nice button!"); // fn() pointers impl IntoView
-p!(my_button(), div!("Nice!") ); // () impl IntoView
-p!{@style="color: green"; my_a("#red")};
 ```
 
 ## Name
-I always though the `horrorshow` crate was neat, and `leptos` is close to the
-disease `leptospirosis`. It is just a little grim. Also, the macro that makes
-this crate is truly horrendous.
+
+I always thought the `horrorshow` crate was neat, and `leptos` is close to the
+disease *leptospirosis*. It is all just a little grim. Secondly, this crate is
+created with nested `macro_rules!`, something truly horrendous.
