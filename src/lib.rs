@@ -1,7 +1,7 @@
 #![feature(macro_metavar_expr)]
 #![doc = include_str!("../README.md")]
 
-pub use leptos_dom::{CollectView, IntoAttribute, IntoView};
+pub use leptos_dom::{Attribute, CollectView, IntoAttribute, IntoView, View};
 
 pub fn render(v: impl IntoView) -> String {
     v.into_view().render_to_string().to_string()
